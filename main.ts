@@ -1,15 +1,17 @@
-input.onLogoEvent(TouchButtonEvent.Touched, function () {
+input.onLogoEvent(TouchButtonEvent.Touched, function on_logo_touched() {
+    
     pins.servoWritePin(AnalogPin.P8, 0)
     I2C_LCD1602.clear()
     I2C_LCD1602.ShowString("entrer le mot de passe", 0, 0)
     passwd_enter = ""
 })
-bluetooth.onBluetoothConnected(function () {
+bluetooth.onBluetoothConnected(function on_bluetooth_connected() {
+    
     basic.showIcon(IconNames.Happy)
     connect = 1
     while (connect == 1) {
         ble_val = bluetooth.uartReadUntil(serial.delimiters(Delimiters.Hash))
-        serial.writeString("" + (ble_val))
+        serial.writeString("" + ble_val)
         serial.writeLine("")
         if (ble_val == "a") {
             pins.digitalWritePin(DigitalPin.P16, 1)
@@ -37,19 +39,21 @@ bluetooth.onBluetoothConnected(function () {
             I2C_LCD1602.BacklightOn()
             basic.showIcon(IconNames.Happy)
         }
+        
         neopixel_mode()
         face_mode()
         sensor_mode()
     }
 })
-bluetooth.onBluetoothDisconnected(function () {
+bluetooth.onBluetoothDisconnected(function on_bluetooth_disconnected() {
     basic.showIcon(IconNames.Sad)
 })
-input.onButtonPressed(Button.A, function () {
+input.onButtonPressed(Button.A, function on_button_pressed_a() {
+    
     passwd_enter = "" + passwd_enter + "."
     I2C_LCD1602.ShowString(passwd_enter, 0, 1)
 })
-function face_mode () {
+function face_mode() {
     if (ble_val == "1") {
         basic.showIcon(IconNames.Happy)
     } else if (ble_val == "2") {
@@ -65,8 +69,11 @@ function face_mode () {
     } else if (ble_val == "0") {
         basic.clearScreen()
     }
+    
 }
-input.onButtonPressed(Button.AB, function () {
+
+input.onButtonPressed(Button.AB, function on_button_pressed_ab() {
+    
     I2C_LCD1602.clear()
     if (passwd_enter == password) {
         I2C_LCD1602.ShowString("correct", 0, 0)
@@ -81,12 +88,15 @@ input.onButtonPressed(Button.AB, function () {
         I2C_LCD1602.clear()
         I2C_LCD1602.ShowString("entrer le mot de passe", 0, 0)
     }
+    
 })
-input.onButtonPressed(Button.B, function () {
+input.onButtonPressed(Button.B, function on_button_pressed_b() {
+    
     passwd_enter = "" + passwd_enter + "-"
     I2C_LCD1602.ShowString(passwd_enter, 0, 1)
 })
-function sensor_mode () {
+function sensor_mode() {
+    
     if (ble_val == "o") {
         I2C_LCD1602.clear()
         temp_flag = 1
@@ -105,21 +115,27 @@ function sensor_mode () {
         I2C_LCD1602.clear()
         I2C_LCD1602.ShowString("entrer le mot de passe", 0, 0)
     }
+    
 }
-function neopixel_mode () {
+
+function neopixel_mode() {
+    
     if (ble_val == "i") {
         neo_count += 1
         if (neo_count >= 9) {
             neo_count = 9
         }
+        
     } else if (ble_val == "j") {
         neo_count += -1
         if (neo_count <= 1) {
             neo_count = 1
         }
+        
     } else if (ble_val == "k") {
         neo_count = 0
     }
+    
     if (neo_count == 1) {
         strip.showColor(neopixel.colors(NeoPixelColors.Red))
     } else if (neo_count == 2) {
@@ -141,7 +157,9 @@ function neopixel_mode () {
     } else if (neo_count == 0) {
         strip.showColor(neopixel.colors(NeoPixelColors.Black))
     }
+    
 }
+
 let someone_flag = 0
 let security_flag = 0
 let dangerous_flag = 0
@@ -156,12 +174,8 @@ let passwd_enter = ""
 let window_flag = 0
 let password = ""
 let neo_count = 0
-let strip: neopixel.Strip = null
-serial.redirect(
-SerialPin.USB_TX,
-SerialPin.USB_RX,
-BaudRate.BaudRate9600
-)
+let strip : neopixel.Strip = null
+serial.redirect(SerialPin.USB_TX, SerialPin.USB_RX, BaudRate.BaudRate9600)
 basic.showIcon(IconNames.House)
 pins.servoWritePin(AnalogPin.P9, 125)
 I2C_LCD1602.LcdInit(39)
@@ -175,13 +189,15 @@ strip.show()
 neo_count = 0
 password = "..--"
 window_flag = 1
-basic.forever(function () {
+basic.forever(function on_forever() {
+    
     water_val = pins.analogReadPin(AnalogPin.P0)
     if (water_val > 200 && window_flag == 1) {
         pins.servoWritePin(AnalogPin.P9, 0)
     } else if (water_val <= 200 && window_flag == 1) {
         pins.servoWritePin(AnalogPin.P9, 125)
     }
+    
     if (temp_flag == 1) {
         for (let index = 0; index < 1; index++) {
             I2C_LCD1602.ShowString("temperature", 0, 0)
@@ -189,7 +205,7 @@ basic.forever(function () {
         I2C_LCD1602.ShowNumber(input.temperature(), 0, 1)
         basic.pause(500)
     } else if (water_flag == 1) {
-        for (let index = 0; index < 1; index++) {
+        for (let index2 = 0; index2 < 1; index2++) {
             I2C_LCD1602.ShowString("capteur de valeur", 0, 0)
         }
         I2C_LCD1602.ShowNumber(pins.analogReadPin(AnalogPin.P0), 0, 1)
@@ -203,15 +219,15 @@ basic.forever(function () {
                 dangerous_flag = 1
                 security_flag = 0
             }
-        } else {
-            if (security_flag == 0) {
-                I2C_LCD1602.clear()
-                I2C_LCD1602.ShowString("sécurité", 0, 0)
-                basic.pause(500)
-                dangerous_flag = 0
-                security_flag = 1
-            }
+            
+        } else if (security_flag == 0) {
+            I2C_LCD1602.clear()
+            I2C_LCD1602.ShowString("sécurité", 0, 0)
+            basic.pause(500)
+            dangerous_flag = 0
+            security_flag = 1
         }
+        
     } else if (people_flag == 1) {
         if (pins.digitalReadPin(DigitalPin.P15) == 1) {
             if (someone_flag == 0) {
@@ -220,13 +236,14 @@ basic.forever(function () {
                 basic.pause(500)
                 someone_flag = 1
             }
-        } else {
-            if (someone_flag == 1) {
-                I2C_LCD1602.clear()
-                I2C_LCD1602.ShowString("RAS", 0, 0)
-                basic.pause(500)
-                someone_flag = 0
-            }
+            
+        } else if (someone_flag == 1) {
+            I2C_LCD1602.clear()
+            I2C_LCD1602.ShowString("RAS", 0, 0)
+            basic.pause(500)
+            someone_flag = 0
         }
+        
     }
+    
 })

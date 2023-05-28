@@ -27,7 +27,7 @@
     "supportedTargets": [
         "microbit"
     ],
-    "preferredEditor": "blocksprj",
+    "preferredEditor": "pyprj",
     "yotta": {
         "config": {
             "microbit-dal": {
